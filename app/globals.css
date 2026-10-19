@@ -1,0 +1,122 @@
+@import "tailwindcss";
+@import "@phosphor-icons/web/regular";
+@import "@phosphor-icons/web/fill";
+
+:root {
+  color-scheme: dark;
+  --page: #05070f;
+  --color-bg: #080c1a;
+  --sidebar-bg: #060a16;
+  --color-surface: #0e1530;
+  --surface-sunken: #0b1128;
+  --color-text: #e6eaf6;
+  --text-muted: #8a93b2;
+  --text-dim: #7c86a2;
+  --text-faint: #5e6884;
+  --text-ghost: #454e68;
+  --border-frame: #222c4a;
+  --border-card: #1f2949;
+  --border-soft: #1a2340;
+  --border-row: #161d33;
+  --border-strong: #2b3450;
+  --accent-100: #eef2fe;
+  --accent-200: #d6e0fb;
+  --accent-300: #b4c6f6;
+  --accent-400: #8aa6ee;
+  --accent-500: #5b7fe0;
+  --accent-600: #3c5dbe;
+  --accent-700: #25408f;
+  --accent-800: #132663;
+  --accent-900: #001449;
+  --state-available: #5fd3aa;
+  --state-loaned: #9aa3bc;
+  --state-maintenance: #e8b961;
+  --state-overdue: #f0a0a5;
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-bg: var(--color-bg);
+  --color-sidebar: var(--sidebar-bg);
+  --color-surface: var(--color-surface);
+  --color-sunken: var(--surface-sunken);
+  --color-copy: var(--color-text);
+  --color-muted: var(--text-muted);
+  --color-dim: var(--text-dim);
+  --color-faint: var(--text-faint);
+  --color-ghost: var(--text-ghost);
+  --color-edge: var(--border-frame);
+  --color-edge-card: var(--border-card);
+  --color-edge-soft: var(--border-soft);
+  --color-edge-row: var(--border-row);
+  --color-edge-strong: var(--border-strong);
+  --color-action: var(--accent-500);
+  --color-action-light: var(--accent-400);
+  --color-action-text: var(--accent-300);
+  --color-available: var(--state-available);
+  --color-loaned: var(--state-loaned);
+  --color-maintenance: var(--state-maintenance);
+  --color-overdue: var(--state-overdue);
+  --font-sans: "Open Sans", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--page);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: "Open Sans", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-500);
+  outline-offset: 2px;
+}
+
+a {
+  color: var(--accent-400);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-300);
+}
+
+::selection {
+  background: var(--accent-800);
+  color: var(--accent-100);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
