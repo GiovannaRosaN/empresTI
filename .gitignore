@@ -1,0 +1,13 @@
+
+# Dependencies and generated build output
+node_modules/
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local environment files
+.env*
+!.env.example
