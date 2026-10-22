@@ -1,0 +1,91 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  COLLABORATOR
+}
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  memberships Membership[]
+  equipments  Equipment[]
+  loans       Loan[]
+  auditLogs   AuditLog[]
+
+  @@map("tenants")
+}
+
+model Membership {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  tenantId  String   @map("tenant_id")
+  role      Role     @default(COLLABORATOR)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tenantId])
+  @@map("memberships")
+}
+
+model Equipment {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  assetTag        String   @unique @map("asset_tag")
+  name            String
+  category        String
+  serialNumber    String?  @map("serial_number")
+  location        String?
+  conditionStatus String   @map("condition_status")
+  notes           String?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  loans  Loan[]
+
+  @@map("equipments")
+}
+
+model Loan {
+  id          String    @id @default(uuid())
+  tenantId    String    @map("tenant_id")
+  equipmentId String    @map("equipment_id")
+  borrowerId  String    @map("borrower_id")
+  status      String
+  borrowedAt  DateTime  @default(now()) @map("borrowed_at")
+  dueDate     DateTime  @map("due_date")
+  returnedAt  DateTime? @map("returned_at")
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@map("loans")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  tenantId  String   @map("tenant_id")
+  userId    String   @map("user_id")
+  action    String
+  entity    String
+  details   String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
