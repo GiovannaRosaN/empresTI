@@ -12,15 +12,15 @@ afterEach(() => {
 });
 
 describe("isDemoAccessEnabled", () => {
-  it("enables public demo access by default", () => {
+  it("disables public demo access by default", () => {
     delete process.env.DEMO_ACCESS_ENABLED;
 
-    expect(isDemoAccessEnabled()).toBe(true);
+    expect(isDemoAccessEnabled()).toBe(false);
   });
 
-  it("can be disabled explicitly", () => {
-    process.env.DEMO_ACCESS_ENABLED = "false";
+  it("enables public demo access only when explicitly enabled", () => {
+    process.env.DEMO_ACCESS_ENABLED = "true";
 
-    expect(isDemoAccessEnabled()).toBe(false);
+    expect(isDemoAccessEnabled()).toBe(true);
   });
 });

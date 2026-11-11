@@ -6,6 +6,9 @@ alwaysApply: false
 
 # Variáveis de ambiente e chaves
 
+Esta é a referência do projeto para tratamento de segredos e variáveis de
+ambiente.
+
 > Leitor: agente
 
 ## Quando

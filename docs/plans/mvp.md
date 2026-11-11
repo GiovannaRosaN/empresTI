@@ -5,13 +5,13 @@
 
 ## Estratégia
 
-Implementar em fatias verticais, preservando o monólito Next.js e os contratos TypeScript estritos definidos no ADR. Não iniciar persistência, autorização por tenant ou estados de empréstimo que dependam de decisões ainda abertas. Resolver primeiro as decisões listadas na spec e registrar os resultados antes de construir os contratos afetados.
+Implementar em fatias verticais, preservando o monólito Next.js e os contratos TypeScript estritos definidos no ADR. As regras de empréstimo, devolução normal e matriz de acesso da v1 estão aprovadas e registradas nas specs; o tratamento de devolução danificada ou incompleta permanece pendente. Não provisionar a conta do professor nem acessar banco remoto. Confirmar que qualquer banco usado em validação é local e isolado.
 
 ## Fases
 
 ### 0. Decisões de produto e acesso
 
-Resolver as cinco perguntas de `docs/perguntas-prd.md`, além de tenant e matriz de papéis/permissões. Registrar as decisões na documentação apropriada antes de definir o modelo de dados. Esta fase bloqueia o backend funcional e a autenticação/autorização completa.
+As decisões aprovadas de prazo, ciclo do empréstimo, devolução normal, histórico, tenant e matriz de acesso estão registradas nas specs; o tratamento de devolução danificada ou incompleta ainda depende de decisão do time. O provisionamento da conta do professor e o processo de produção permanecem fora deste escopo.
 
 ### 1. Fundação de aplicação
 
@@ -19,15 +19,15 @@ Configurar Next.js App Router, TypeScript `strict`, Tailwind e estrutura de test
 
 ### 2. Experiência de colaborador
 
-Implementar login e shell autenticado; catálogo, detalhe e Meus empréstimos; estados de carregamento, vazio e erro; interações de busca/filtro e confirmação. Conectar às operações tipadas tRPC depois que modelos e regras bloqueadas estiverem decididos.
+Integrar login Supabase para identidades já provisionadas com exatamente uma Membership; catálogo, detalhe e Meus empréstimos; estados de carregamento, vazio e erro; interações de busca/filtro e confirmação. Conectar às operações tipadas tRPC.
 
 ### 3. Experiência de Operações
 
-Implementar lista de empréstimos em aberto, cadastro de equipamento, controles de situação e ações de devolução. Restringir as rotas e procedimentos ao papel autorizado definido na fase 0.
+Implementar lista de empréstimos em aberto, cadastro de equipamento, controles de situação e ações de devolução. Restringir as rotas e procedimentos ao papel autorizado definido na spec de acesso.
 
 ### 4. Dados, segurança e integração
 
-Modelar dados e criar migrations Prisma somente após aprovação dos contratos. Habilitar RLS e policies nas migrations para tabelas sujeitas a usuário/tenant. Implementar procedimentos tRPC com middlewares de autenticação, tenant e administração, além das regras de negócio transacionais.
+Alinhar schema e criar migrations Prisma após a aprovação recebida para esta tarefa. Habilitar RLS e policies explícitas; passar user, tenant e papel validados por contexto local de transação. Implementar procedimentos tRPC com middlewares de autenticação, tenant e administração, além das regras de negócio transacionais.
 
 ### 5. Verificação de ponta a ponta
 
@@ -35,11 +35,11 @@ Validar regras com testes unitários e tRPC `createCaller`, persistência com Po
 
 ## Critério de conclusão
 
-Todos os CA-01 a CA-09 da spec atendidos, decisões bloqueadoras resolvidas, testes e build aprovados, migration aplicada do zero em banco local quando houver mudança de schema, e `git status --short` revisado conforme `docs/rules/checks.md`.
+Todos os CA-01 a CA-09 da spec atendidos, decisões bloqueadoras resolvidas, testes e build aprovados, migration aplicada do zero em banco local quando houver mudança de schema, e `git status --short` revisado conforme `../../rules/checks.md`.
 
 ## Riscos e limites
 
-- As perguntas de negócio e o modelo de tenant/papéis bloqueiam decisões corretas para auth, dados e autorização.
-- O repositório ainda não tem aplicação configurada; dependências presentes não equivalem à fundação aprovada.
+- Provisionamento de produção e confirmação do banco local continuam pendentes; não provisionar contas nem executar migrações em ambientes remotos.
+- O repositório tem protótipos visuais, mas ainda não tem tRPC conectado ao Prisma.
 - A regra de atraso deve ser calculada conforme decisão do time; não assumir job agendado nem definir apenas na interface.
 - Conteúdo de demonstração do layout deve ser tratado como referência visual, não como dado real ou seed de produção.

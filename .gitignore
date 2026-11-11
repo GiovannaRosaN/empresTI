@@ -7,6 +7,9 @@ build/
 coverage/
 *.tsbuildinfo
 next-env.d.ts
+skills/imagens-equipamentos/generated/images/
+skills/imagens-equipamentos/generated/contact-sheet.jpg
+skills/imagens-equipamentos/generated/cache/
 
 # Local environment files
 .env*

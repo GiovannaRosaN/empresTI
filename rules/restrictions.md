@@ -6,6 +6,8 @@ alwaysApply: true
 
 # O que não fazer
 
+Estas restrições complementam as instruções gerais de `AGENTS.md`.
+
 > Leitor: agente
 
 ## Autoridade

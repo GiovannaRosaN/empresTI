@@ -42,7 +42,7 @@ A migration deve conseguir ser aplicada em uma máquina limpa, do zero, sem
 passos manuais e sem erro. O schema do Prisma, as migrations e o banco local
 devem permanecer sincronizados.
 
-Antes de declarar a tarefa pronta, siga também `docs/rules/checks.md`.
+Antes de declarar a tarefa pronta, siga também `rules/checks.md`.
 
 ## Não faça
 

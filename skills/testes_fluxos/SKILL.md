@@ -7,12 +7,12 @@ description: Planeje, escreva ou revise testes de comportamento do EmpresTI. Use
 
 ## Precedência
 
-Esta skill orienta; não decide. Em conflito, valem `docs/rules/`, `docs/adr/` e a spec aprovada. Pare e avise.
+Esta skill orienta; não decide. Em conflito, valem `rules/`, `docs/adr/` e a spec aprovada. Pare e avise.
 
 ## Antes de começar
 
 1. Localize a spec, os critérios de aceite e os testes próximos ao comportamento alterado.
-2. Leia `docs/adr/001-stack.md`, `AGENTS.md` e `docs/rules/checks.md` para identificar as ferramentas aprovadas e os comandos disponíveis no projeto.
+2. Leia `docs/adr/001-stack.md`, `AGENTS.md` e `rules/checks.md` para identificar as ferramentas aprovadas e os comandos disponíveis no projeto.
 3. Confirme o que está realmente instalado e configurado. A stack planejada no ADR não significa que cada ferramenta ou infraestrutura já esteja pronta.
 
 ## Procedimento
@@ -21,7 +21,7 @@ Esta skill orienta; não decide. Em conflito, valem `docs/rules/`, `docs/adr/` e
 2. Use Vitest para testes automatizados. Use Testing Library, Postgres real/Testcontainers, `createCaller` do tRPC ou Playwright quando estiverem configurados e forem adequados à camada testada.
 3. Prefira testar a regra no limite onde ela é aplicada. Para autorização e persistência, não substitua o banco ou a checagem de acesso por mocks quando isso esconder constraints, transações ou isolamento.
 4. Mantenha dados de teste isolados e determinísticos. Use apenas serviços e bancos locais; não use dados reais nem credenciais de produção.
-5. Rode primeiro o teste mais próximo da alteração; depois execute os checks requeridos por `AGENTS.md` e `docs/rules/checks.md`.
+5. Rode primeiro o teste mais próximo da alteração; depois execute os checks requeridos por `AGENTS.md` e `rules/checks.md`.
 
 ## Verificação
 

@@ -295,18 +295,18 @@ Tamanhos: 12px (breadcrumb) · 13px (caret) · 15–16px (nav/marca) · 17px (he
 
 ### 01 · Login (1440×820)
 Split `560px | 1fr`.
-- **Esquerda** — hero em `linear-gradient(160deg,#001449,#00102F 60%,#080C1A)`, padding 56px, `justify-content:space-between`: marca no topo (ícone 34px, texto 16px) · bloco central com título 34px (máx. 20ch), subtítulo 14px `#93A0C6` (máx. 38ch), régua-marca esmaecida, dois números (3 itens por pessoa / 14 dias de prazo) com `gap:40px` · rodapé "Operações · v1" 11px.
+- **Esquerda** — hero em `linear-gradient(160deg,#001449,#00102F 60%,#080C1A)`, padding 56px, `justify-content:space-between`: marca no topo (ícone 34px, texto 16px) · bloco central com título 34px (máx. 20ch), subtítulo 14px `#93A0C6` (máx. 38ch), régua-marca esmaecida, dois números (3 itens por pessoa / 14 dias úteis de prazo) com `gap:40px` · rodapé "Operações · v1" 11px.
 - **Direita** — formulário centralizado de 372px, padding 56px: "Entrar" 22px/600, subtítulo 13px, campos e-mail + senha (`gap:18px`), botão primário 44px com `ph-arrow-right`, régua esmaecida, nota de suporte 12px centralizada.
 
 ### 02 · Catálogo (1440×900)
 Sidebar + header (busca, "2 de 3 itens com você", `ph-bell`).
-Conteúdo: H1 "Catálogo" + contagem ("32 equipamentos · 11 disponíveis agora") → **faixa de aviso de regras** (limite de 3, prazo de 14 dias, bloqueio por atraso, manutenção fora do catálogo) → chips de categoria + "Só disponíveis" à direita → grid 3×2 de cards mostrando os três estados.
+Conteúdo: H1 "Catálogo" + contagem ("32 equipamentos · 11 disponíveis agora") → **faixa de aviso de regras** (limite de 3, prazo de 14 dias úteis, bloqueio por atraso, manutenção fora do catálogo) → chips de categoria + "Só disponíveis" à direita → grid 3×2 de cards mostrando os três estados.
 
 ### 03 · Detalhe do item (1440×900)
 Sidebar + header com breadcrumb (Catálogo › Notebooks › item) e contador à direita.
 Conteúdo `1fr 356px`:
 - Coluna principal: bloco de imagem 260px com ícone 64px → título 28px + pill de estado → descrição (máx. 60ch) → régua esmaecida → ficha técnica em 4 colunas (Categoria, Patrimônio, Local, Última devolução) → "Histórico" em linhas `data | evento | resultado`.
-- Coluna lateral: card **Solicitar empréstimo** (Retirada / Prazo padrão 14 dias / Devolver até — valor em `#B4C6F6` 600 — botão 44px + nota de retirada) e card **Seus itens** com "2 de 3", segmentos de limite e nota de status.
+- Coluna lateral: card **Solicitar empréstimo** (local de retirada / prazo padrão de 14 dias úteis / vencimento calculado a partir da confirmação — valor em `#B4C6F6` 600 — botão 44px + nota de retirada) e card **Seus itens** com "2 de 3", segmentos de limite e nota de status.
 - Sobreposto: diálogo de confirmação (§5.9) com o prazo calculado e o aviso de que o colaborador chegará a 3 de 3.
 
 ### 04 · Meus empréstimos (1440×820)
@@ -361,7 +361,7 @@ Regras: nunca animar `box-shadow` de moldura; nada acima de 240ms; respeitar `@m
 ## 9. Regras de negócio visíveis na interface
 
 1. **Máximo de 3 itens por pessoa** — contador no header ("2 de 3 itens com você"), segmentos de limite no detalhe e em Meus empréstimos, aviso no diálogo quando a solicitação leva ao terceiro item.
-2. **Prazo padrão de 14 dias** — data calculada no card de solicitação ("Devolver até 14/set"), barra de progresso por item, coluna "Prazo" em Operações.
+2. **Prazo padrão de 14 dias úteis** — data calculada a partir da confirmação no card de solicitação ("Devolver até 14/set"), barra de progresso por item, coluna "Prazo" em Operações. O próximo dia útil após a confirmação é o dia 1; usar `America/Sao_Paulo` para decidir quando começa o atraso.
 3. **Atraso bloqueia novo empréstimo** — linha tingida em vermelho suave, card de estatística "Em atraso" com borda vermelha, botão "Solicitar" desabilitado (`opacity:.45`) com nota explicativa quando houver atraso.
 4. **Manutenção não fica disponível** — pill âmbar, card sem ação, e nota no controle "Situação inicial" do cadastro.
 5. Fora de escopo v1 (não desenhar): reserva com data futura, notificação por e-mail, importação de planilha.

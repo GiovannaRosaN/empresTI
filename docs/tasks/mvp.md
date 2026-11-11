@@ -4,12 +4,12 @@ Tasks derivadas de [spec funcional](../specs/mvp.md) e [plano](../plans/mvp.md).
 
 ## Fase 0 — Decisões
 
-- [ ] **T-01** Decidir tratamento de devolução danificada ou incompleta. Referência: pergunta 1 do PRD.
-- [ ] **T-02** Decidir quando e como um empréstimo passa a atrasado. Referência: pergunta 2 do PRD.
-- [ ] **T-03** Definir se solicitação é empréstimo imediato ou se existe etapa de retirada/cancelamento. Referência: pergunta 3 do PRD.
-- [ ] **T-04** Definir provisionamento de colaboradores e concessão/revogação do papel de Operações. Referência: pergunta 4 do PRD.
-- [ ] **T-05** Decidir retenção e visibilidade do histórico de devoluções. Referência: pergunta 5 do PRD.
-- [ ] **T-06** Definir tenant, papéis e matriz de permissões, pendentes no ADR-001.
+- [ ] **T-01** Obter decisão do time sobre o tratamento de devolução danificada ou incompleta. Não presumir a condição do equipamento nem o fluxo de Operações nesse caso. A reativação por `ADMIN` permanece independente. Referência: `docs/specs/fluxo-devolucao.md`.
+- [x] **T-02** Decidir quando e como um empréstimo passa a atrasado. O prazo é de 14 dias úteis, sem feriados; vencimento até o fim do dia em `America/Sao_Paulo`, atraso a partir da meia-noite local seguinte. Referência: `docs/specs/modelo-banco-prd.md`.
+- [x] **T-03** Definir se solicitação é empréstimo imediato ou se existe etapa de retirada/cancelamento. Decisão registrada em `docs/specs/modelo-banco-prd.md`: a confirmação cria o empréstimo imediatamente; não há etapa de retirada/cancelamento e a retirada física não reinicia o prazo. Referência: pergunta 3 do PRD.
+- [ ] **T-04** Definir quem provisiona usuários de produção e como concede/revoga `ADMIN`. Essa pendência não autoriza provisionar a conta do professor. Referência: `docs/specs/acesso-provisionamento.md`.
+- [x] **T-05** Decidir retenção e visibilidade do histórico de devoluções. Empréstimos devolvidos permanecem no histórico; colaborador vê os próprios, `ADMIN` os do tenant. Referência: `docs/specs/modelo-banco-prd.md`, `docs/specs/acesso-provisionamento.md`.
+- [x] **T-06** Definir tenant, papéis e matriz de permissões: cada identidade tem exatamente uma Membership; colaborador acessa os próprios empréstimos; `ADMIN` gerencia equipamentos e empréstimos do próprio tenant. Referência: `docs/specs/acesso-provisionamento.md`.
 
 **Pronto quando:** decisões estiverem registradas e permitirem definir entidades, transições de estado e limites de acesso sem suposições.
 
@@ -24,11 +24,11 @@ Tasks derivadas de [spec funcional](../specs/mvp.md) e [plano](../plans/mvp.md).
 
 ## Fase 2 — Colaborador
 
-- [ ] **T-11** Implementar `/login` usando Supabase Auth e `@supabase/ssr`, após resolver T-04.
+- [ ] **T-11** Implementar `/login` usando Supabase Auth e `@supabase/ssr`; somente identidades provisionadas com Membership podem acessar.
 - [ ] **T-12** Implementar `/catalogo` com busca, filtros, situação e aviso das regras aprovadas.
 - [ ] **T-13** Implementar `/catalogo/:patrimonio` com estado do item, dados técnicos e confirmação de solicitação.
 - [ ] **T-14** Implementar `/meus-emprestimos` com prazo, limite visual e ação de devolução.
-- [ ] **T-15** Implementar testes de regras para limite, prazo, bloqueio por atraso e indisponibilidade, conforme decisões T-01 a T-03.
+- [ ] **T-15** Implementar testes de regras para limite, prazo, bloqueio por atraso e indisponibilidade, conforme decisões aprovadas de T-02 e T-03; cobrir T-01 após aprovação.
 
 **Pronto quando:** CA-01 a CA-05 passam, incluindo autorização para dados próprios.
 
@@ -36,16 +36,16 @@ Tasks derivadas de [spec funcional](../specs/mvp.md) e [plano](../plans/mvp.md).
 
 - [ ] **T-16** Implementar `/operacoes/emprestimos` com filtros, tabela, métricas e tratamento visual de atraso.
 - [ ] **T-17** Implementar `/operacoes/equipamentos/novo` com validação e situações iniciais permitidas.
-- [ ] **T-18** Implementar devolução por Operações, respeitando o fluxo decidido em T-01 e T-03.
+- [ ] **T-18** Implementar devolução normal por Operações, respeitando T-03; não definir tratamento de dano ou incompletude enquanto T-01 estiver pendente.
 - [ ] **T-19** Proteger páginas e procedimentos de Operações conforme T-04 e T-06.
 
 **Pronto quando:** CA-06 e CA-07 passam para usuário autorizado e acesso não autorizado é negado.
 
 ## Fase 4 — Persistência e segurança
 
-- [ ] **T-20** Definir schema Prisma para equipamento, empréstimo, usuário/tenant e estados aprovados em T-01 a T-06.
-- [ ] **T-21** Criar migrations com Prisma Migrate; incluir RLS e policies SQL na mesma migration quando aplicável.
-- [ ] **T-22** Implementar contexto tRPC e middlewares `protectedProcedure`, `tenantProcedure` e `adminProcedure` de acordo com T-06.
+- [ ] **T-20** Alinhar schema Prisma ao modelo: patrimônio único por tenant e empréstimo aberto definido por `returned_at IS NULL`.
+- [ ] **T-21** Criar migration Prisma autorizada, com índices, remoção de `Loan.status` e RLS/policies necessárias.
+- [ ] **T-22** Implementar contexto tRPC e middlewares `protectedProcedure`, `tenantProcedure` e `adminProcedure`; contexto DB usa apenas user/tenant/papel validados.
 - [ ] **T-23** Implementar operações de catálogo, solicitação, consulta pessoal, devolução, operações e cadastro através do tRPC.
 - [ ] **T-24** Testar isolamento e regras usando `createCaller` e Postgres real/Testcontainers.
 
@@ -55,7 +55,7 @@ Tasks derivadas de [spec funcional](../specs/mvp.md) e [plano](../plans/mvp.md).
 
 - [ ] **T-25** Cobrir os fluxos críticos com Playwright: login, pedido, bloqueios, devolução e Operações.
 - [ ] **T-26** Validar migration do zero e testes afetados em ambiente local.
-- [ ] **T-27** Executar teste definido no `package.json`, build e revisão de `git status --short` conforme `docs/rules/checks.md`.
+- [ ] **T-27** Executar teste definido no `package.json`, build e revisão de `git status --short` conforme `../../rules/checks.md`.
 - [ ] **T-28** Conferir CA-01 a CA-09 e corrigir divergências entre implementação, spec e layout.
 
 **Pronto quando:** todos os critérios de aceitação estão cobertos e os checks obrigatórios passam sem alterações fora do escopo.

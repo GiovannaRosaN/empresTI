@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { trpc } from "@/trpc/client";
 
 const collaboratorLinks = [
   { href: "/catalogo", label: "Catálogo", icon: "ph-squares-four" },
-  { href: "/meus-emprestimos", label: "Meus empréstimos", icon: "ph-hand-arrow-down", badge: "2" },
+  { href: "/meus-emprestimos", label: "Meus empréstimos", icon: "ph-hand-arrow-down" },
 ];
 
 const operationsLinks = [
@@ -16,19 +17,22 @@ const operationsLinks = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const userQuery = trpc.user.me.useQuery();
+  const user = userQuery.data;
   const title = pathname.startsWith("/operacoes/equipamentos") ? "Operações / Cadastrar equipamento"
     : pathname.startsWith("/operacoes") ? "Operações / Empréstimos em aberto"
       : pathname.startsWith("/meus-emprestimos") ? "Meus empréstimos"
         : pathname.startsWith("/catalogo/") ? "Catálogo / Equipamento"
           : "Catálogo";
+  const links = user?.role === "ADMIN" ? [...collaboratorLinks, ...operationsLinks] : collaboratorLinks;
 
-  function navLink(item: (typeof collaboratorLinks)[number] | (typeof operationsLinks)[number]) {
+  function navLink(item: (typeof links)[number]) {
     const active = pathname === item.href || (item.href !== "/catalogo" && pathname.startsWith(`${item.href}/`)) || (item.href === "/catalogo" && pathname.startsWith("/catalogo"));
     return (
       <Link key={item.href} aria-current={active ? "page" : undefined} className={`flex min-h-9 items-center gap-2.5 rounded-lg px-2.5 text-[13px] transition-colors ${active ? "bg-surface text-copy shadow-[inset_2px_0_0_#5b7fe0]" : "text-loaned hover:bg-sunken hover:text-copy"}`} href={item.href}>
         <i className={`${active ? item.icon.replace("ph-", "ph-fill ph-") : `ph ${item.icon}`} text-base ${active ? "text-action-light" : ""}`} aria-hidden="true" />
         <span>{item.label}</span>
-        {"badge" in item && <span className="ml-auto rounded-full bg-[#132663] px-2 py-0.5 text-[11px] font-semibold text-action-text">{item.badge}</span>}
+        {item.href === "/meus-emprestimos" && user && <span className="ml-auto rounded-full bg-[#132663] px-2 py-0.5 text-[11px] font-semibold text-action-text">{user.activeLoans}</span>}
       </Link>
     );
   }
@@ -45,17 +49,17 @@ export function AppShell({ children }: { children: ReactNode }) {
             <p className="px-2 pb-1.5 text-[10px] uppercase tracking-[0.12em] text-ghost">Colaborador</p>
             {collaboratorLinks.map(navLink)}
           </div>
-          <div className="flex flex-col gap-[3px] pt-2">
+          {user?.role === "ADMIN" && <div className="flex flex-col gap-[3px] pt-2">
             <p className="px-2 pb-1.5 text-[10px] uppercase tracking-[0.12em] text-ghost">Operações</p>
             {operationsLinks.map(navLink)}
-          </div>
+          </div>}
         </nav>
         <div className="mt-auto flex flex-col gap-3">
           <div className="flex items-center gap-2.5 rounded-[10px] border border-edge-soft bg-sunken p-3">
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#132663] text-[11px] font-semibold text-action-text">MA</span>
-            <div className="min-w-0"><p className="truncate text-xs font-semibold text-copy">Marina Alves</p><p className="text-[11px] text-dim">Design · demonstração</p></div>
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#132663] text-[11px] font-semibold text-action-text">{user?.email?.slice(0, 2).toLocaleUpperCase("pt-BR") ?? "…"}</span>
+            <div className="min-w-0"><p className="truncate text-xs font-semibold text-copy">{user?.email ?? (userQuery.isPending ? "Carregando conta…" : "Acesso indisponível")}</p><p className="text-[11px] text-dim">{user?.role === "ADMIN" ? "Operações" : "Colaborador"}</p></div>
           </div>
-          <span className="text-center text-[10px] uppercase tracking-[0.1em] text-faint">Dados demonstrativos</span>
+          {userQuery.error && <p className="text-[11px] leading-5 text-overdue" role="alert">{userQuery.error.message}</p>}
         </div>
       </aside>
       <div className="flex min-w-0 flex-col">
@@ -66,14 +70,20 @@ export function AppShell({ children }: { children: ReactNode }) {
             <button className="sr-only" type="submit">Buscar</button>
           </form>
           <div className="hidden shrink-0 items-center gap-3 sm:flex">
-            <span className="rounded-full border border-edge-card bg-sunken px-3 py-1.5 text-xs text-muted">2 de 3 itens com você</span>
-            <span className="rounded-full border border-[#25408f] bg-[#132663] px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-action-text">Prévia</span>
+            {user && <span className="rounded-full border border-edge-card bg-sunken px-3 py-1.5 text-xs text-muted">{user.activeLoans} de {user.maxActiveLoans} itens com você</span>}
+            <span className="rounded-full border border-[#25408f] bg-[#132663] px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-action-text">{user?.role === "ADMIN" ? "Operações" : "V1"}</span>
           </div>
         </header>
-        <div className="border-b border-edge-row px-4 py-2 text-[11px] text-faint sm:hidden">{title} · prévia demonstrativa</div>
-        <main className="flex-1 px-4 py-6 sm:px-7 sm:py-8">{children}</main>
-        <nav className="grid grid-cols-4 border-t border-edge-soft bg-sidebar px-1 py-2 md:hidden" aria-label="Navegação móvel">
-          {[...collaboratorLinks, ...operationsLinks].map((item) => {
+        <div className="border-b border-edge-row px-4 py-2 text-[11px] text-faint sm:hidden">{title}</div>
+        {userQuery.isPending ? (
+          <main className="flex-1 px-4 py-6 sm:px-7 sm:py-8"><p className="mx-auto max-w-[600px] rounded-xl border border-edge-soft bg-surface p-8 text-center text-sm text-muted">Verificando seu acesso…</p></main>
+        ) : userQuery.error ? (
+          <main className="flex-1 px-4 py-6 sm:px-7 sm:py-8"><p className="mx-auto max-w-[600px] rounded-xl border border-[rgba(224,91,98,.4)] bg-surface p-8 text-center text-sm text-overdue" role="alert">{userQuery.error.message}</p></main>
+        ) : (
+          <main className="flex-1 px-4 py-6 sm:px-7 sm:py-8">{children}</main>
+        )}
+        <nav className={`grid ${user?.role === "ADMIN" ? "grid-cols-4" : "grid-cols-2"} border-t border-edge-soft bg-sidebar px-1 py-2 md:hidden`} aria-label="Navegação móvel">
+          {links.map((item) => {
             const active = pathname === item.href || (item.href === "/catalogo" && pathname.startsWith("/catalogo"));
             return <Link key={item.href} className={`flex flex-col items-center gap-1 px-1 py-1 text-center text-[9px] ${active ? "text-action-text" : "text-dim"}`} href={item.href}><i className={`ph ${item.icon} text-lg`} aria-hidden="true" /><span>{item.label === "Empréstimos em aberto" ? "Operações" : item.label === "Cadastrar equipamento" ? "Cadastrar" : item.label}</span></Link>;
           })}

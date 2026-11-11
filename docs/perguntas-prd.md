@@ -21,3 +21,26 @@
 5. Haverá algum histórico de empréstimos já devolvidos, ou o sistema mostra apenas o estado atual (quem está com o quê agora)?
    tipo: fora de escopo
    por que importa: o PRD não menciona histórico/relatórios, e isso deve ficar escrito explicitamente para não ser implementado "de brinde" junto da tela de Operações, ampliando o escopo da v1 sem necessidade.
+
+## Decisões adotadas para a v1
+
+1. **Dano ou item incompleto:** decisão pendente de aprovação. Não presumir
+   condição do equipamento ou ação de Operações nesse caso. A reativação de
+   equipamento fora de uso por `ADMIN` permanece uma permissão independente.
+2. **Atraso:** calcular sob demanda usando `America/Sao_Paulo`; o dia de
+   vencimento permanece no prazo e atraso começa à meia-noite local seguinte.
+   Não é necessário job diário.
+3. **Solicitação e devolução:** confirmar cria o empréstimo imediatamente; não
+   há etapa separada de retirada. O colaborador pode registrar a devolução do
+   próprio item, e Operações pode registrar o recebimento no balcão. O registro
+   do colaborador é uma declaração no sistema, sem comprovação física.
+4. **Acesso:** não há cadastro aberto. Cada identidade autenticada deve ter
+   exatamente uma `Membership`; a matriz aprovada e o processo pendente de
+   provisionamento estão em `specs/acesso-provisionamento.md`.
+5. **Histórico:** manter os empréstimos devolvidos; colaborador vê os próprios
+   e `ADMIN` vê empréstimos do próprio tenant.
+
+O prazo da v1 é de **14 dias úteis**, de segunda a sexta sem descontar feriados,
+começando no próximo dia útil após a confirmação. Esta decisão complementa o
+PRD, que especifica 14 dias sem detalhar dias úteis; a escolha e a premissa de
+vencimento no fim do dia estão registradas em `specs/mvp.md` e `ENTREGA.md`.

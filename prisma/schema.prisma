@@ -1,7 +1,5 @@
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 generator client {
@@ -36,6 +34,7 @@ model Membership {
   createdAt DateTime @default(now()) @map("created_at")
 
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  loans  Loan[]
 
   @@unique([userId, tenantId])
   @@map("memberships")
@@ -44,7 +43,7 @@ model Membership {
 model Equipment {
   id              String   @id @default(uuid())
   tenantId        String   @map("tenant_id")
-  assetTag        String   @unique @map("asset_tag")
+  assetTag        String   @map("asset_tag")
   name            String
   category        String
   serialNumber    String?  @map("serial_number")
@@ -57,6 +56,8 @@ model Equipment {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   loans  Loan[]
 
+  @@unique([tenantId, assetTag], map: "equipments_tenant_id_asset_tag_key")
+  @@unique([id, tenantId], map: "equipments_id_tenant_id_key")
   @@map("equipments")
 }
 
@@ -65,14 +66,15 @@ model Loan {
   tenantId    String    @map("tenant_id")
   equipmentId String    @map("equipment_id")
   borrowerId  String    @map("borrower_id")
-  status      String
   borrowedAt  DateTime  @default(now()) @map("borrowed_at")
   dueDate     DateTime  @map("due_date")
   returnedAt  DateTime? @map("returned_at")
 
-  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  tenant             Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  equipment          Equipment  @relation(fields: [equipmentId, tenantId], references: [id, tenantId], onDelete: Cascade)
+  borrowerMembership Membership @relation(fields: [borrowerId, tenantId], references: [userId, tenantId], onDelete: Restrict)
 
+  @@index([tenantId, borrowerId, returnedAt], map: "loans_tenant_borrower_returned_idx")
   @@map("loans")
 }
 

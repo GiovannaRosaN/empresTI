@@ -1,3 +1,3 @@
 export function isDemoAccessEnabled() {
-  return process.env.DEMO_ACCESS_ENABLED !== "false";
+  return process.env.DEMO_ACCESS_ENABLED === "true";
 }

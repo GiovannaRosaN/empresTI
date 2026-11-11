@@ -7,7 +7,8 @@ Este projeto é um sistema web interno para controle de empréstimo de equipamen
 O comportamento principal do produto está definido em [docs/PRD.md](docs/PRD.md) e deve ser respeitado em qualquer alteração.
 
 - Cada colaborador pode ter no máximo 3 itens emprestados ao mesmo tempo.
-- O prazo padrão de devolução é de 14 dias.
+- O prazo padrão de devolução é de 14 dias úteis, conforme calendário e fuso
+  definidos na spec funcional.
 - Quem estiver em atraso não pode solicitar novo empréstimo.
 - Equipamentos em manutenção não aparecem como disponíveis.
 - O fluxo inicial inclui login, catálogo, solicitação, devolução e painel de operações.
@@ -86,6 +87,17 @@ npm run build
 - Cobrir mudanças relevantes com testes.
 - Não expor segredos em código, logs, commits ou arquivos versionados.
 - Não executar ações de git sem autorização explícita do usuário.
+
+## Subagentes
+
+- O agente [verificador-spec](agents/verificador-spec.md) tem dois modos
+  independentes e não implementa nem corrige: `antes-do-codigo` avalia a spec
+  e retorna `APTA` ou `NÃO APTA`; `depois-do-codigo` avalia implementação,
+  testes e evidências e retorna `PRONTA` ou `NÃO PRONTA`.
+- Siga [rules/spec-flow.md](rules/spec-flow.md): faça a revisão prévia antes de
+  começar o código e a revisão posterior antes de declarar a spec pronta.
+- Não declare a spec pronta sem o veredito `PRONTA` e evidências por critério,
+  conforme [rules/spec-flow.md](rules/spec-flow.md).
 
 ## Política de Git
 - Não fazer `git commit`.

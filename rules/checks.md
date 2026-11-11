@@ -6,6 +6,8 @@ alwaysApply: true
 
 # Verificação de fim de tarefa
 
+Este procedimento está centralizado em `rules/checks.md`.
+
 > Leitor: agente
 
 ## Quando
